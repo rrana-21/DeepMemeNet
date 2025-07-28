@@ -1,0 +1,20 @@
+# Core
+torch>=1.13
+torchvision
+pandas
+numpy
+scikit-learn
+matplotlib
+tqdm
+
+# HuggingFace Models
+transformers>=4.30.0
+sentencepiece  # Required for XLM-R and some tokenizers
+
+# Augmentation
+nlpaug
+nltk  # for synonym augmentation (WordNet)
+opencv-python  # optional: for image ops with torchvision transforms
+
+# Optional Utilities
+Pillow  # image loading
