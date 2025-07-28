@@ -16,47 +16,117 @@
 ---
 
 ## Project Structure
+
+```
 hateful-meme-detector/
 ├── models/
-│ ├── bert_roberta.py # CLIP + BERT/RoBERTa fusion
-│ ├── xlm_r.py # Prompted XLM-R + BLIP + AttentiveFusion
-│ ├── clip_fusion.py # General CLIP + transformer concat
-│ ├── attention_module.py # Attentive fusion layer
-│ └── losses.py # Supervised Contrastive Loss
+│   ├── bert_roberta.py           # CLIP + BERT/RoBERTa fusion
+│   ├── xlm_r.py                  # Prompted XLM-R + BLIP + AttentiveFusion
+│   ├── clip_fusion.py            # General CLIP + transformer concat
+│   ├── attention_module.py       # Attentive fusion layer
+│   └── losses.py                 # Supervised Contrastive Loss
 │
 ├── utils/
-│ ├── data_loader.py # Dataset and tokenizer
-│ ├── captioning.py # BLIP caption generator
-│ ├── eval_utils.py # ROC, PR, Confusion, Calibration
-│ └── augmentation.py # nlpaug + torchvision transforms
+│   ├── data_loader.py            # Dataset and tokenizer
+│   ├── captioning.py             # BLIP caption generator
+│   ├── eval_utils.py             # ROC, PR, Confusion, Calibration
+│   └── augmentation.py           # nlpaug + torchvision transforms
 │
-├── train.py # Unified training script
-├── evaluate.py # Inference + metrics
-├── requirements.txt # Python dependencies
-├── README.md # This file
+├── train.py                      # Unified training script
+├── evaluate.py                   # Inference + metrics
+├── requirements.txt              # Python dependencies
+├── README.md                     # This file
 └── data/
-├── sample_input.json # Example meme input
-└── blip_captions.json # (Expected) caption cache
+    ├── sample_input.json         # Example meme input
+    └── blip_captions.json        # (Expected) caption cache
+```
 
 ---
 
 ## Sample Input
 
+```json
 {
   "id": "meme_0417.png",
   "text": "Oh great, another genius who figured out how to plug in a charger.",
   "caption": "A person holding a phone with a charging cable, smiling sarcastically",
   "label": 1
 }
+```
 
 ---
 
-## Installation 
+## Installation
 
+```bash
 # Create a fresh virtual environment (recommended)
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
+---
+
+## Usage
+
+### Training
+
+#### BERT + CLIP
+```bash
+python train.py \
+  --csv data/train.csv \
+  --embeddings data/clip_embeddings.pt \
+  --model bert_roberta \
+  --base_model bert
+```
+
+#### XLM-R + BLIP + AttentiveFusion + Contrastive Loss
+```bash
+python train.py \
+  --csv data/train.csv \
+  --embeddings data/clip_embeddings.pt \
+  --captions data/blip_captions.json \
+  --model xlm_r \
+  --use_contrastive \
+  --scl_weight 0.2
+```
+
+---
+
+### Evaluation
+
+```bash
+python evaluate.py \
+  --csv data/test.csv \
+  --embeddings data/clip_embeddings.pt \
+  --checkpoint checkpoints/xlm_r_epoch5.pt \
+  --model xlm_r
+```
+
+---
+
+## Metrics Supported
+
+- ROC AUC
+- Precision-Recall Curve
+- Confusion Matrix
+- Predicted Probability Histogram
+- Calibration Curve
+
+---
+
+## Datasets Used
+
+- Facebook Hateful Memes Dataset: https://ai.facebook.com/tools/hateful-memes/
+- MultiOFF Offensive Image-Text Dataset: https://aclanthology.org/2021.findings-emnlp.252/
+
+---
+
+## Future Work
+
+- Incorporate retrieval-guided contrastive learning
+- Extend to multilingual memes
+- Fine-tune CLIP and BLIP for this domain
+- Add toxicity explanations using attention visualization
